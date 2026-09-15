@@ -3,6 +3,7 @@ import {
   cleanTarget,
   extractAddonSlug,
   isTemplate,
+  stripOrigin,
 } from "#src/urlResolver.ts";
 
 type IngressCardConfig = {
@@ -22,6 +23,8 @@ type AddonInfo = {
   ingress_entry?: string;
   version?: string;
   state?: string;
+  slug?: string;
+  name?: string;
   [key: string]: unknown;
 };
 
@@ -52,7 +55,23 @@ const BaseElement =
     ? HTMLElement
     : (class {} as unknown as typeof HTMLElement);
 
-export class DynamicIngressCard extends BaseElement {
+function setIngressCookie(session: string): void {
+  if (typeof document === "undefined") return;
+  const isHttps =
+    typeof location !== "undefined" && location.protocol === "https:";
+  const cookieStr = `ingress_session=${session};path=/api/hassio_ingress/;SameSite=Strict${
+    isHttps ? ";Secure" : ""
+  }`;
+
+  const desc = Object.getOwnPropertyDescriptor(Document.prototype, "cookie");
+  if (desc?.set) {
+    desc.set.call(document, cookieStr);
+  } else {
+    Reflect.set(document, "cookie", cookieStr);
+  }
+}
+
+class DynamicIngressCard extends BaseElement {
   public static getConfigElement(): HTMLElement {
     return document.createElement("ingress-card-editor");
   }
@@ -137,17 +156,22 @@ export class DynamicIngressCard extends BaseElement {
     }
   }
 
-  private async _refreshIngressSession(): Promise<void> {
-    if (!this._hass) return;
+  private async _refreshIngressSession(): Promise<string | null> {
+    if (!this._hass) return null;
     try {
-      await this._hass.callWS({
+      const resp = await this._hass.callWS<{session?: string}>({
         endpoint: "/ingress/session",
         method: "post",
         type: "supervisor/api",
       });
+      if (resp?.session) {
+        setIngressCookie(resp.session);
+        return resp.session;
+      }
     } catch {
-      // Background session refresh failure is non-fatal; iframe will retry on reload
+      // Non-fatal background refresh
     }
+    return null;
   }
 
   private async _resolveAndLoad(
@@ -159,28 +183,69 @@ export class DynamicIngressCard extends BaseElement {
       return;
     }
 
-    const addonMatch = extractAddonSlug(target, hass.panels);
-    let resolvedUrl = target;
+    const cleaned = cleanTarget(target);
+    const localTarget = stripOrigin(cleaned);
+
+    // Direct Ingress URL (/api/hassio_ingress/...)
+    if (localTarget.startsWith("/api/hassio_ingress/")) {
+      await this._refreshIngressSession();
+      const base = localTarget.replace(/\/+$/, "");
+      const resolvedUrl = `${base}/`;
+      if (this._currentSrc !== resolvedUrl) {
+        this._currentSrc = resolvedUrl;
+        this._renderIframe(resolvedUrl);
+      }
+      return;
+    }
+
+    const addonMatch = extractAddonSlug(localTarget, hass.panels);
+    let resolvedUrl = localTarget;
 
     if (addonMatch) {
       try {
         await this._refreshIngressSession();
 
-        const info = await hass.callWS<AddonInfo>({
-          endpoint: `/addons/${addonMatch.addonSlug}/info`,
-          method: "get",
-          type: "supervisor/api",
-        });
+        let info: AddonInfo | null = null;
+        try {
+          info = await hass.callWS<AddonInfo>({
+            endpoint: `/addons/${addonMatch.addonSlug}/info`,
+            method: "get",
+            type: "supervisor/api",
+          });
+        } catch {
+          // If direct addon slug failed, fallback to querying /addons list
+          const list = await hass.callWS<{addons?: AddonInfo[]}>({
+            endpoint: "/addons",
+            method: "get",
+            type: "supervisor/api",
+          });
+          const found = list?.addons?.find(
+            (a) =>
+              (typeof a.slug === "string" &&
+                a.slug.toLowerCase() === addonMatch.addonSlug.toLowerCase()) ||
+              (typeof a.name === "string" &&
+                a.name.toLowerCase() === addonMatch.addonSlug.toLowerCase()),
+          );
+          if (found?.slug) {
+            info = await hass.callWS<AddonInfo>({
+              endpoint: `/addons/${found.slug}/info`,
+              method: "get",
+              type: "supervisor/api",
+            });
+          }
+        }
 
         if (!info?.ingress_url) {
           this._showError(
-            `No Ingress endpoint available for addon '${addonMatch.addonSlug}'. Ensure the addon is started.`,
+            `No Ingress endpoint available for addon '${addonMatch.addonSlug}'. Ensure the addon is installed and started.`,
           );
           return;
         }
 
         const baseIngress = info.ingress_url.replace(/\/+$/, "");
-        resolvedUrl = `${baseIngress}${addonMatch.subpath}`;
+        resolvedUrl = addonMatch.subpath
+          ? `${baseIngress}${addonMatch.subpath}`
+          : `${baseIngress}/`;
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err);
         this._showError(`Failed to establish Ingress session: ${message}`);
@@ -301,4 +366,5 @@ export class DynamicIngressCard extends BaseElement {
   }
 }
 
+export {DynamicIngressCard, setIngressCookie};
 export type {AddonInfo, HomeAssistant, IngressCardConfig};

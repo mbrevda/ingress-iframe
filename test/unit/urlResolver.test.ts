@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import {describe, it} from "node:test";
-import {cleanTarget, extractAddonSlug, isTemplate} from "#src/urlResolver.ts";
+import {
+  cleanTarget,
+  extractAddonSlug,
+  isTemplate,
+  stripOrigin,
+} from "#src/urlResolver.ts";
 
 void describe("urlResolver", () => {
   void describe("isTemplate", () => {
@@ -26,6 +31,17 @@ void describe("urlResolver", () => {
       assert.equal(cleanTarget("  /test  "), "/test");
       assert.equal(cleanTarget(""), "");
       assert.equal(cleanTarget(null), "");
+    });
+  });
+
+  void describe("stripOrigin", () => {
+    void it("leaves relative URLs intact", () => {
+      assert.equal(stripOrigin("/a0d7b954_nodered"), "/a0d7b954_nodered");
+      assert.equal(stripOrigin("core_ssh"), "core_ssh");
+    });
+
+    void it("leaves external URLs intact when location is not defined", () => {
+      assert.equal(stripOrigin("https://google.com"), "https://google.com");
     });
   });
 
@@ -55,8 +71,13 @@ void describe("urlResolver", () => {
       });
     });
 
-    void it("resolves panel names from Home Assistant panels mapping", () => {
+    void it("resolves panel names and titles from Home Assistant panels mapping", () => {
       const panels = {
+        custom_music: {
+          component_name: "hassio",
+          title: "Music Assistant",
+          url_path: "d5369777_music_assistant",
+        },
         esphome: {config: {addon: "5c53de3b_esphome"}},
         nodered: {config: {addon: "a0d7b954_nodered"}},
         zigbee2mqtt: {config: {addon: "7be23e32_zigbee2mqtt"}},
@@ -76,6 +97,23 @@ void describe("urlResolver", () => {
         addonSlug: "7be23e32_zigbee2mqtt",
         subpath: "/#/map",
       });
+
+      assert.deepEqual(extractAddonSlug("/custom_music", panels), {
+        addonSlug: "d5369777_music_assistant",
+        subpath: "",
+      });
+
+      assert.deepEqual(extractAddonSlug("/Music Assistant", panels), {
+        addonSlug: "d5369777_music_assistant",
+        subpath: "",
+      });
+    });
+
+    void it("returns null for direct ingress paths (handled separately)", () => {
+      assert.equal(
+        extractAddonSlug("/api/hassio_ingress/abc123xyz_token/"),
+        null,
+      );
     });
 
     void it("returns null for external URLs and non-addon paths without panels", () => {

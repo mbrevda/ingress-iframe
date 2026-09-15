@@ -1,8 +1,14 @@
 import assert from "node:assert/strict";
 import {describe, it} from "node:test";
-import {DynamicIngressCard} from "#src/ingressCard.ts";
+import {DynamicIngressCard, setIngressCookie} from "#src/ingressCard.ts";
 
 void describe("DynamicIngressCard", () => {
+  void it("handles setIngressCookie safely in node environment", () => {
+    assert.doesNotThrow(() => {
+      setIngressCookie("test_session_token");
+    });
+  });
+
   void it("exports a valid Custom Element class", () => {
     assert.equal(typeof DynamicIngressCard, "function");
     assert.equal(typeof DynamicIngressCard.prototype.setConfig, "function");
