@@ -17,6 +17,24 @@ function cleanTarget(value: unknown): string {
   return value.trim();
 }
 
+function parseAspectRatio(value?: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const ratioMatch = /^(\d+(?:\.\d+)?)\s*[:/]\s*(\d+(?:\.\d+)?)$/.exec(trimmed);
+  if (ratioMatch) {
+    const width = Number.parseFloat(ratioMatch[1]);
+    const height = Number.parseFloat(ratioMatch[2]);
+    if (width > 0 && height > 0) {
+      const pct = (height / width) * 100;
+      return `${pct.toFixed(2).replace(/\.?0+$/, "")}%`;
+    }
+  }
+
+  return trimmed;
+}
+
 function stripOrigin(target: string): string {
   if (typeof location !== "undefined" && target.startsWith(location.origin)) {
     return target.slice(location.origin.length);
@@ -111,6 +129,7 @@ export {
   findPanelAddon,
   getPanelSlug,
   isTemplate,
+  parseAspectRatio,
   stripOrigin,
 };
 export type {HassPanelInfo};

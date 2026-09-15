@@ -3,8 +3,24 @@ import {
   cleanTarget,
   extractAddonSlug,
   isTemplate,
+  parseAspectRatio,
   stripOrigin,
 } from "#src/urlResolver.ts";
+
+type GridOptions = {
+  columns?: number | "full" | "auto";
+  rows?: number | "auto";
+  min_columns?: number;
+  min_rows?: number;
+  max_columns?: number;
+  max_rows?: number;
+  grid_columns?: number | "full" | "auto";
+  grid_rows?: number | "auto";
+  grid_min_columns?: number;
+  grid_min_rows?: number;
+  grid_max_columns?: number;
+  grid_max_rows?: number;
+};
 
 type IngressCardConfig = {
   type: string;
@@ -16,6 +32,8 @@ type IngressCardConfig = {
   aspect_ratio?: string;
   allow?: string;
   sandbox?: string;
+  grid_options?: GridOptions;
+  layout_options?: GridOptions;
 };
 
 type AddonInfo = {
@@ -69,6 +87,36 @@ function setIngressCookie(session: string): void {
   } else {
     Reflect.set(document, "cookie", cookieStr);
   }
+}
+
+function resolveGridOptions(config?: IngressCardConfig): {
+  grid_columns: number | string;
+  grid_rows: number | string;
+  grid_min_columns: number;
+  grid_min_rows: number;
+} {
+  const isAspect = Boolean(config?.aspect_ratio);
+  const opts = config?.grid_options || config?.layout_options;
+  if (!opts) {
+    return {
+      grid_columns: isAspect ? "auto" : "full",
+      grid_min_columns: 1,
+      grid_min_rows: 2,
+      grid_rows: isAspect ? "auto" : 8,
+    };
+  }
+
+  const cols = opts.grid_columns || opts.columns;
+  const rows = opts.grid_rows || opts.rows;
+  const minCols = opts.grid_min_columns || opts.min_columns;
+  const minRows = opts.grid_min_rows || opts.min_rows;
+
+  return {
+    grid_columns: cols || (isAspect ? "auto" : "full"),
+    grid_min_columns: minCols || 1,
+    grid_min_rows: minRows || 2,
+    grid_rows: rows || (isAspect ? "auto" : 8),
+  };
 }
 
 class DynamicIngressCard extends BaseElement {
@@ -265,7 +313,8 @@ class DynamicIngressCard extends BaseElement {
     const title = this._config?.title;
     const height =
       this._config?.height ?? "calc(100dvh - var(--header-height, 64px))";
-    const aspectRatio = this._config?.aspect_ratio;
+    const rawAspect = this._config?.aspect_ratio;
+    const aspectRatio = parseAspectRatio(rawAspect);
     const isAspect = Boolean(aspectRatio);
     const paddingStyle = isAspect ? `padding-top: ${aspectRatio};` : "";
     const allow = this._config?.allow ?? DEFAULT_ALLOW;
@@ -348,23 +397,36 @@ class DynamicIngressCard extends BaseElement {
   }
 
   public getCardSize(): number {
-    const aspectRatio = this._config?.aspect_ratio;
+    const rawAspect = this._config?.aspect_ratio;
+    const aspectRatio = parseAspectRatio(rawAspect);
     const title = this._config?.title;
     if (aspectRatio) {
-      const match = /^(\d+)%?$/.exec(aspectRatio.trim());
-      const percent = match ? Number(match[1]) : 50;
+      const match = /^(\d+(?:\.\d+)?)%?$/.exec(aspectRatio.trim());
+      const percent = match ? Number.parseFloat(match[1]) : 50;
       return 1 + Math.ceil(percent / 15) + (title ? 1 : 0);
     }
-    return (this._config?.height ? 10 : 4) + (title ? 1 : 0);
+    const height = this._config?.height;
+    if (height) {
+      const pxMatch = /^(\d+)px$/i.exec(height.trim());
+      if (pxMatch) {
+        return (
+          Math.max(1, Math.ceil(Number(pxMatch[1]) / 50)) + (title ? 1 : 0)
+        );
+      }
+      return 10 + (title ? 1 : 0);
+    }
+    return 4 + (title ? 1 : 0);
   }
 
-  public getLayoutOptions(): {grid_columns: string; grid_rows: string} {
-    return {
-      grid_columns: this._config?.aspect_ratio ? "auto" : "full",
-      grid_rows: "auto",
-    };
+  public getLayoutOptions(): {
+    grid_columns: number | string;
+    grid_rows: number | string;
+    grid_min_columns: number;
+    grid_min_rows: number;
+  } {
+    return resolveGridOptions(this._config);
   }
 }
 
-export {DynamicIngressCard, setIngressCookie};
-export type {AddonInfo, HomeAssistant, IngressCardConfig};
+export {DynamicIngressCard, resolveGridOptions, setIngressCookie};
+export type {AddonInfo, GridOptions, HomeAssistant, IngressCardConfig};

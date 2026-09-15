@@ -27,9 +27,9 @@ function computeLabel(schema: {name: string}): string {
     case "title":
       return "Title (Optional)";
     case "aspect_ratio":
-      return "Aspect Ratio (e.g. 56.25%, 50%)";
+      return "Aspect Ratio (e.g. 16:9, 4:3, 56.25%, 50%)";
     case "height":
-      return "Height (e.g. calc(100dvh - 64px), 600px)";
+      return "Card Height (Optional)";
     case "allow":
       return "Iframe Allow Permissions";
     case "sandbox":
@@ -44,9 +44,9 @@ function computeHelper(schema: {name: string}): string {
     case "url":
       return "Add-on slug (e.g. 5c53de3b_esphome), sidebar path (/esphome), URL, or Jinja template";
     case "aspect_ratio":
-      return "Responsive aspect ratio (e.g. 56.25% for 16:9). Overrides height when set.";
+      return "Responsive aspect ratio (e.g. 16:9, 4:3, 1:1, 56.25%). Overrides height when set.";
     case "height":
-      return "CSS height used when aspect ratio is not specified.";
+      return "CSS height (e.g. 600px, 80vh, calc(100dvh - 64px)) used when aspect ratio is omitted.";
     case "allow":
       return "Leave blank for default media & fullscreen permissions.";
     case "sandbox":

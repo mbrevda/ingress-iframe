@@ -4,6 +4,7 @@ import {
   cleanTarget,
   extractAddonSlug,
   isTemplate,
+  parseAspectRatio,
   stripOrigin,
 } from "#src/urlResolver.ts";
 
@@ -31,6 +32,27 @@ void describe("urlResolver", () => {
       assert.equal(cleanTarget("  /test  "), "/test");
       assert.equal(cleanTarget(""), "");
       assert.equal(cleanTarget(null), "");
+    });
+  });
+
+  void describe("parseAspectRatio", () => {
+    void it("converts standard ratio notation to percentage", () => {
+      assert.equal(parseAspectRatio("16:9"), "56.25%");
+      assert.equal(parseAspectRatio("16 / 9"), "56.25%");
+      assert.equal(parseAspectRatio("4:3"), "75%");
+      assert.equal(parseAspectRatio("1:1"), "100%");
+      assert.equal(parseAspectRatio("21:9"), "42.86%");
+    });
+
+    void it("preserves direct percentage notation", () => {
+      assert.equal(parseAspectRatio("50%"), "50%");
+      assert.equal(parseAspectRatio("56.25%"), "56.25%");
+    });
+
+    void it("handles null, empty, and non-ratio values gracefully", () => {
+      assert.equal(parseAspectRatio(null), null);
+      assert.equal(parseAspectRatio(""), null);
+      assert.equal(parseAspectRatio("auto"), "auto");
     });
   });
 

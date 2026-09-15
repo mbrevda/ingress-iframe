@@ -33,13 +33,21 @@ void describe("DynamicIngressCard", () => {
     assert.equal(card.getCardSize(), 5);
 
     card.setConfig({
-      aspect_ratio: "50%",
+      aspect_ratio: "16:9",
       title: "My Addon",
       type: "custom:ingress-card",
       url: "/esphome",
     });
-    // 1 + ceil(50/15) + 1 = 6
+    // 16:9 -> 56.25% -> 1 + ceil(56.25/15) + 1 = 6
     assert.equal(card.getCardSize(), 6);
+
+    card.setConfig({
+      height: "500px",
+      type: "custom:ingress-card",
+      url: "/esphome",
+    });
+    // ceil(500 / 50) = 10
+    assert.equal(card.getCardSize(), 10);
   });
 
   void it("returns layout options for Lovelace sections view", () => {
@@ -47,7 +55,9 @@ void describe("DynamicIngressCard", () => {
     card.setConfig({type: "custom:ingress-card", url: "/esphome"});
     assert.deepEqual(card.getLayoutOptions(), {
       grid_columns: "full",
-      grid_rows: "auto",
+      grid_min_columns: 1,
+      grid_min_rows: 2,
+      grid_rows: 8,
     });
 
     card.setConfig({
@@ -57,7 +67,21 @@ void describe("DynamicIngressCard", () => {
     });
     assert.deepEqual(card.getLayoutOptions(), {
       grid_columns: "auto",
+      grid_min_columns: 1,
+      grid_min_rows: 2,
       grid_rows: "auto",
+    });
+
+    card.setConfig({
+      grid_options: {columns: 3, rows: 5},
+      type: "custom:ingress-card",
+      url: "/esphome",
+    });
+    assert.deepEqual(card.getLayoutOptions(), {
+      grid_columns: 3,
+      grid_min_columns: 1,
+      grid_min_rows: 2,
+      grid_rows: 5,
     });
   });
 
