@@ -7,10 +7,6 @@ A drop-in replacement for the official Home Assistant **Webpage / Iframe** card 
 
 Embed any add-on interface (Node-RED, ESPHome, Zigbee2MQTT, Grafana, Music Assistant, etc.) or external website directly inside your Lovelace dashboards while keeping your top header, tabs, and menu bar intact.
 
-<p align="center">
-  <img src="preview.svg" alt="Ingress Card Preview" width="680">
-</p>
-
 ---
 
 ## Table of Contents
