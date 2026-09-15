@@ -1,6 +1,7 @@
 node_modules
-.DS_Store
 dist
+ingress-card.js
+.DS_Store
 .env
 .envrc
 *.tsbuildinfo

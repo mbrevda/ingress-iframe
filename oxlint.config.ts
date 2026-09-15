@@ -17,7 +17,7 @@ export default defineConfig({
     setInterval: "readonly",
     window: "readonly",
   },
-  ignorePatterns: ["ingress-card.js", "dist/**", "node_modules/**"],
+  ignorePatterns: ["dist/**", "node_modules/**"],
   jsPlugins: ["./oxlintPluginBraces.ts"],
   options: {
     reportUnusedDisableDirectives: "error",

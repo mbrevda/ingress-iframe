@@ -3,7 +3,7 @@ import {defineConfig} from "oxfmt";
 export default defineConfig({
   bracketSpacing: false,
   embeddedLanguageFormatting: "auto",
-  ignorePatterns: ["ingress-card.js", "dist/**", "node_modules/**"],
+  ignorePatterns: ["dist/**", "node_modules/**"],
   objectWrap: "collapse",
   printWidth: 80,
   sortImports: {
