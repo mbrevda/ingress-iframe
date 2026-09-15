@@ -1,5 +1,12 @@
 import {DynamicIngressCard} from "#src/ingressCard.ts";
-import type {CustomCardInfo} from "#src/types.ts";
+
+type CustomCardInfo = {
+  type: string;
+  name: string;
+  description: string;
+  preview?: boolean;
+  documentationURL?: string;
+};
 
 type CustomGlobal = typeof globalThis & {customCards?: CustomCardInfo[]};
 
@@ -19,3 +26,4 @@ customGlobal.customCards.push({
 });
 
 export {DynamicIngressCard} from "#src/ingressCard.ts";
+export type {CustomCardInfo};

@@ -1,5 +1,45 @@
-import type {AddonInfo, HomeAssistant, IngressCardConfig} from "#src/types.ts";
-import {cleanTarget, extractAddonSlug, isTemplate} from "#src/urlResolver.ts";
+import {
+  type HassPanelInfo,
+  cleanTarget,
+  extractAddonSlug,
+  isTemplate,
+} from "#src/urlResolver.ts";
+
+type IngressCardConfig = {
+  type: string;
+  url?: string;
+  title?: string;
+  addon?: string;
+  panel?: string;
+  height?: string;
+  aspect_ratio?: string;
+  allow?: string;
+  sandbox?: string;
+};
+
+type AddonInfo = {
+  ingress_url?: string;
+  ingress_entry?: string;
+  version?: string;
+  state?: string;
+  [key: string]: unknown;
+};
+
+type HomeAssistant = {
+  panels?: Record<string, HassPanelInfo>;
+  connection: {
+    subscribeMessage: <T>(
+      callback: (result: T) => void,
+      params: Record<string, unknown>,
+    ) => Promise<() => void>;
+  };
+  callWS: <T>(params: {
+    type: string;
+    endpoint?: string;
+    method?: string;
+    [key: string]: unknown;
+  }) => Promise<T>;
+};
 
 const KEEP_ALIVE_INTERVAL_MS = 10 * 60 * 1000;
 const DEFAULT_ALLOW =
@@ -252,3 +292,5 @@ export class DynamicIngressCard extends BaseElement {
     };
   }
 }
+
+export type {AddonInfo, HomeAssistant, IngressCardConfig};

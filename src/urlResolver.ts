@@ -1,4 +1,11 @@
-import type {HassPanelInfo} from "#src/types.ts";
+type HassPanelInfo = {
+  component_name?: string;
+  config?: {addon?: string; url?: string; [key: string]: unknown};
+  icon?: string | null;
+  title?: string | null;
+  url_path?: string;
+  [key: string]: unknown;
+};
 
 function isTemplate(value: unknown): boolean {
   if (typeof value !== "string") return false;
@@ -45,3 +52,4 @@ function extractAddonSlug(
 }
 
 export {cleanTarget, extractAddonSlug, isTemplate};
+export type {HassPanelInfo};
