@@ -338,9 +338,9 @@ class DynamicIngressCard extends BaseElement {
     if (!this.shadowRoot) return;
     this._currentSrc = null;
 
-    const title = this._config?.title;
+    const title = this._config?.title || "Ingress Card";
     const aspectRatio = parseAspectRatio(this._config?.aspect_ratio);
-    const height = aspectRatio ? "auto" : (this._config?.height ?? "180px");
+    const height = aspectRatio ? "auto" : (this._config?.height ?? "240px");
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -352,66 +352,116 @@ class DynamicIngressCard extends BaseElement {
         ha-card {
           display: flex;
           flex-direction: column;
-          box-sizing: border-box;
+          align-items: center;
+          justify-content: center;
+          padding: 24px 16px 20px;
           min-height: ${height};
-          background: var(--ha-card-background, var(--card-background-color, white));
+          box-sizing: border-box;
+          background: var(--ha-card-background, var(--card-background-color, #1c1c1e));
           border-radius: var(--ha-card-border-radius, 12px);
-          border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
-          color: var(--primary-text-color, #212121);
-          font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
+          border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, rgba(255, 255, 255, 0.12)));
+          color: var(--primary-text-color, #ffffff);
+          font-family: var(--paper-font-body1_-_font-family, inherit);
+          text-align: center;
+          position: relative;
           overflow: hidden;
         }
-        .card-header {
-          padding: 16px 16px 0;
-          font-family: var(--ha-card-header-font-family, inherit);
-          font-size: var(--ha-card-header-font-size, 24px);
-          font-weight: normal;
-          color: var(--ha-card-header-color, var(--primary-text-color, #212121));
-          letter-spacing: -0.012em;
-          line-height: 32px;
-          display: block;
-        }
-        .placeholder-content {
-          flex: 1;
+        .window-header {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 28px;
+          background: rgba(127, 127, 127, 0.08);
+          border-bottom: 1px solid var(--divider-color, rgba(255, 255, 255, 0.08));
           display: flex;
-          flex-direction: column;
           align-items: center;
-          justify-content: center;
-          padding: 24px 16px;
-          text-align: center;
-          gap: 10px;
+          padding: 0 12px;
+          gap: 6px;
         }
-        .icon {
+        .dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          opacity: 0.7;
+        }
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+        .window-title {
+          font-size: 11px;
+          color: var(--secondary-text-color, #9e9e9e);
+          margin-left: 6px;
+          font-weight: 500;
+          letter-spacing: 0.3px;
+        }
+        .icon-container {
           width: 44px;
           height: 44px;
-          color: var(--state-icon-color, var(--primary-color, #03a9f4));
-          opacity: 0.85;
+          border-radius: 12px;
+          background: var(--primary-color, #03a9f4);
+          color: var(--text-primary-color, #ffffff);
           display: flex;
           align-items: center;
           justify-content: center;
+          margin-top: 14px;
+          margin-bottom: 10px;
+          box-shadow: 0 4px 12px rgba(3, 169, 244, 0.3);
         }
-        .icon svg {
-          width: 100%;
-          height: 100%;
+        .icon-container svg {
+          width: 24px;
+          height: 24px;
           fill: currentColor;
         }
-        .message {
-          font-size: 13px;
+        .title {
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--primary-text-color, #ffffff);
+          margin: 0 0 4px 0;
+        }
+        .subtitle {
+          font-size: 11px;
+          color: var(--secondary-text-color, #9e9e9e);
+          max-width: 260px;
           line-height: 1.4;
-          color: var(--secondary-text-color, #727272);
-          max-width: 280px;
-          margin: 0;
+          margin: 0 0 12px 0;
+        }
+        .chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 5px;
+          justify-content: center;
+          max-width: 300px;
+        }
+        .chip {
+          background: rgba(127, 127, 127, 0.12);
+          border: 1px solid var(--divider-color, rgba(255, 255, 255, 0.1));
+          border-radius: 10px;
+          padding: 2px 7px;
+          font-size: 10px;
+          font-weight: 500;
+          color: var(--secondary-text-color, #b0b0b0);
         }
       </style>
       <ha-card>
-        ${title ? `<div class="card-header">${title}</div>` : ""}
-        <div class="placeholder-content">
-          <div class="icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M20,8H16.04C15.44,5.65 14.34,3.79 13,2.83C16.27,3.69 18.84,5.54 20,8M12.5,2.05C13.82,3.06 14.88,4.91 15.34,7.3H12.5M10.97,2.05C12.29,3.06 13.35,4.91 13.81,7.3H8.66C9.12,4.91 10.18,3.06 11.5,2.05M4,8H7.96C8.56,5.65 9.66,3.79 11,2.83C7.73,3.69 5.16,5.54 4,8M4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14H4.26C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10M11,21.17C7.73,20.31 5.16,18.46 4,16H7.96C8.56,18.35 9.66,20.21 11,21.17M12.5,21.95C11.18,20.94 10.12,19.09 9.66,16.7H12.5M13.81,16.7C13.35,19.09 12.29,20.94 10.97,21.95M20,16H16.04C15.44,18.35 14.34,20.21 13,21.17C16.27,20.31 18.84,18.46 20,16M16.36,16H19.74C19.9,15.36 20,14.69 20,14H16.36M12.5,9.3H15.54C15.65,10.18 15.75,11.08 15.75,12C15.75,12.92 15.65,13.82 15.54,14.7H12.5M8.46,9.3H11.5V14.7H8.46C8.35,13.82 8.25,12.92 8.25,12C8.25,11.08 8.35,10.18 8.46,9.3Z"/>
-            </svg>
-          </div>
-          <p class="message">Set a URL or Supervisor add-on in the card editor to display content.</p>
+        <div class="window-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="window-title">${title}</span>
+        </div>
+        <div class="icon-container">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm0-13H5V5h14v1z"/>
+          </svg>
+        </div>
+        <h2 class="title">${title}</h2>
+        <p class="subtitle">Embed any Supervisor add-on or web application with Ingress session support.</p>
+        <div class="chips">
+          <span class="chip">ESPHome</span>
+          <span class="chip">Node-RED</span>
+          <span class="chip">Grafana</span>
+          <span class="chip">Zigbee2MQTT</span>
         </div>
       </ha-card>
     `;
