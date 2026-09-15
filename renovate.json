@@ -1,8 +1,39 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "semanticCommits": "enabled",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":prHourlyLimit2",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "rangeStrategy": "pin",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"],
+    "automerge": false,
+    "description": "Moves transitive dependencies"
+  },
   "packageRules": [
-    {"matchUpdateTypes": ["minor", "patch", "pin", "digest"], "automerge": true}
-  ]
+    {
+      "description": "Group the oxc toolchain (lint/format) — they move together",
+      "matchPackageNames": ["oxlint", "oxfmt", "oxlint-tsgolint"],
+      "groupName": "oxc toolchain",
+      "automerge": true
+    },
+    {
+      "description": "CI only, never shipped",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions",
+      "automerge": true
+    },
+    {
+      "description": "DevDependencies only (build & test tooling) — safe to auto-merge",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "devDependencies (non-major)",
+      "automerge": true
+    }
+  ],
+  "platformAutomerge": true
 }

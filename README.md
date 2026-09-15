@@ -1,5 +1,9 @@
 # Ingress Card for Home Assistant
 
+[![HACS Validation](https://github.com/mbrevda/lovelace-ingress-card/actions/workflows/ci.yml/badge.svg)](https://github.com/mbrevda/lovelace-ingress-card/actions/workflows/ci.yml)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/default)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mbrevda&repository=lovelace-ingress-card&category=plugin)
+
 A drop-in replacement for the official Home Assistant **Webpage / Iframe** card that adds native **Supervisor Ingress** support and companion app compatibility.
 
 Embed any add-on interface (Node-RED, ESPHome, Zigbee2MQTT, Grafana, Music Assistant, etc.) or external website directly inside your Lovelace dashboards while keeping your top header, tabs, and menu bar intact.
