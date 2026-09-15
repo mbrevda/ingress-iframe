@@ -406,7 +406,6 @@ class DynamicIngressCard extends BaseElement {
           justify-content: center;
           margin-top: 14px;
           margin-bottom: 10px;
-          box-shadow: 0 4px 12px rgba(3, 169, 244, 0.3);
         }
         .icon-container svg {
           width: 24px;
