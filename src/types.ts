@@ -1,6 +1,7 @@
 type IngressCardConfig = {
   type: string;
   url?: string;
+  title?: string;
   addon?: string;
   panel?: string;
   height?: string;

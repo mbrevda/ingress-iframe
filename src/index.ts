@@ -11,7 +11,8 @@ const customGlobal = globalThis as CustomGlobal;
 customGlobal.customCards ??= [];
 customGlobal.customCards.push({
   description:
-    "Seamlessly embed Add-on Ingress interfaces or URLs in Lovelace with full mobile app support.",
+    "Drop-in replacement for the Home Assistant Webpage/Iframe card that seamlessly supports Add-on Ingress and companion apps.",
+  documentationURL: "https://github.com/mbrevda/lovelace-ingress-card",
   name: "Ingress Card",
   preview: true,
   type: "ingress-card",

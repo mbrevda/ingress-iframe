@@ -149,13 +149,16 @@ export class DynamicIngressCard extends BaseElement {
   private _renderIframe(src: string): void {
     if (!this.shadowRoot) return;
 
+    const title = this._config?.title;
     const height =
       this._config?.height ?? "calc(100dvh - var(--header-height, 64px))";
     const aspectRatio = this._config?.aspect_ratio;
     const isAspect = Boolean(aspectRatio);
-    const aspectStyle = isAspect ? `padding-bottom: ${aspectRatio};` : "";
+    const paddingStyle = isAspect ? `padding-top: ${aspectRatio};` : "";
     const allow = this._config?.allow ?? DEFAULT_ALLOW;
     const sandbox = this._config?.sandbox ?? DEFAULT_SANDBOX;
+
+    const headerHtml = title ? `<h1 class="card-header">${title}</h1>` : "";
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -166,14 +169,29 @@ export class DynamicIngressCard extends BaseElement {
           margin: 0;
           padding: 0;
         }
-        .container {
+        ha-card {
+          overflow: hidden;
+          height: 100%;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .card-header {
+          color: var(--ha-card-header-color, --primary-text-color);
+          font-family: var(--ha-card-header-font-family, inherit);
+          font-size: var(--ha-card-header-font-size, 24px);
+          font-weight: normal;
+          margin-block-start: 0;
+          margin-block-end: 0;
+          padding: 16px 16px 8px;
+        }
+        #root {
           position: relative;
           width: 100%;
           height: ${isAspect ? "0" : height};
-          ${aspectStyle}
+          ${paddingStyle}
         }
         iframe {
-          position: ${isAspect ? "absolute" : "relative"};
+          position: absolute;
           top: 0;
           left: 0;
           width: 100%;
@@ -182,13 +200,16 @@ export class DynamicIngressCard extends BaseElement {
           display: block;
         }
       </style>
-      <div class="container">
-        <iframe
-          src="${src}"
-          allow="${allow}"
-          sandbox="${sandbox}"
-        ></iframe>
-      </div>
+      <ha-card>
+        ${headerHtml}
+        <div id="root">
+          <iframe
+            src="${src}"
+            allow="${allow}"
+            sandbox="${sandbox}"
+          ></iframe>
+        </div>
+      </ha-card>
     `;
   }
 
@@ -196,7 +217,7 @@ export class DynamicIngressCard extends BaseElement {
     if (!this.shadowRoot) return;
     this.shadowRoot.innerHTML = `
       <style>
-        .error-card {
+        ha-card {
           padding: 16px;
           color: var(--error-color, #db4437);
           background-color: var(--card-background-color, #fff);
@@ -207,14 +228,21 @@ export class DynamicIngressCard extends BaseElement {
           line-height: 1.5;
         }
       </style>
-      <div class="error-card">
+      <ha-card>
         <strong>Ingress Card Error:</strong> ${message}
-      </div>
+      </ha-card>
     `;
   }
 
   public getCardSize(): number {
-    return this._config?.aspect_ratio ? 4 : 10;
+    const aspectRatio = this._config?.aspect_ratio;
+    const title = this._config?.title;
+    if (aspectRatio) {
+      const match = /^(\d+)%?$/.exec(aspectRatio.trim());
+      const percent = match ? Number(match[1]) : 50;
+      return 1 + Math.ceil(percent / 15) + (title ? 1 : 0);
+    }
+    return (this._config?.height ? 10 : 4) + (title ? 1 : 0);
   }
 
   public getLayoutOptions(): {grid_columns: string; grid_rows: string} {

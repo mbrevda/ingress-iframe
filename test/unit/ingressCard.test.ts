@@ -13,15 +13,46 @@ void describe("DynamicIngressCard", () => {
     );
   });
 
-  void it("returns layout options for Lovelace sections view", () => {
+  void it("calculates dynamic card size matching official HA iframe card", () => {
     const card = new DynamicIngressCard();
-    const layout = card.getLayoutOptions();
-    assert.deepEqual(layout, {grid_columns: "full", grid_rows: "auto"});
+    card.setConfig({type: "custom:ingress-card", url: "/esphome"});
+    assert.equal(card.getCardSize(), 4);
+
+    card.setConfig({
+      aspect_ratio: "50%",
+      type: "custom:ingress-card",
+      url: "/esphome",
+    });
+    // 1 + ceil(50/15) = 5
+    assert.equal(card.getCardSize(), 5);
+
+    card.setConfig({
+      aspect_ratio: "50%",
+      title: "My Addon",
+      type: "custom:ingress-card",
+      url: "/esphome",
+    });
+    // 1 + ceil(50/15) + 1 = 6
+    assert.equal(card.getCardSize(), 6);
   });
 
-  void it("returns card size", () => {
+  void it("returns layout options for Lovelace sections view", () => {
     const card = new DynamicIngressCard();
-    assert.equal(card.getCardSize(), 10);
+    card.setConfig({type: "custom:ingress-card", url: "/esphome"});
+    assert.deepEqual(card.getLayoutOptions(), {
+      grid_columns: "full",
+      grid_rows: "auto",
+    });
+
+    card.setConfig({
+      aspect_ratio: "16:9",
+      type: "custom:ingress-card",
+      url: "/esphome",
+    });
+    assert.deepEqual(card.getLayoutOptions(), {
+      grid_columns: "auto",
+      grid_rows: "auto",
+    });
   });
 
   void it("validates empty configuration", () => {
