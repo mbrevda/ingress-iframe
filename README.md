@@ -1,8 +1,8 @@
 # Ingress Card for Home Assistant
 
-[![HACS Validation](https://github.com/mbrevda/lovelace-ingress-card/actions/workflows/ci.yml/badge.svg)](https://github.com/mbrevda/lovelace-ingress-card/actions/workflows/ci.yml)
+[![HACS Validation](https://github.com/mbrevda/ingress-iframe/actions/workflows/ci.yml/badge.svg)](https://github.com/mbrevda/ingress-iframe/actions/workflows/ci.yml)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/default)
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mbrevda&repository=lovelace-ingress-card&category=plugin)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mbrevda&repository=ingress-iframe&category=plugin)
 
 A drop-in replacement for the official Home Assistant **Webpage / Iframe** card that adds native **Supervisor Ingress** support and companion app compatibility.
 
@@ -57,12 +57,12 @@ aspect_ratio: 50%
 
 1. Open **HACS** in your Home Assistant sidebar.
 2. Go to **Frontend** → Three dots (top right) → **Custom repositories**.
-3. Add `https://github.com/mbrevda/lovelace-ingress-card` (Category: **Lovelace** / **Dashboard**).
+3. Add `https://github.com/mbrevda/ingress-iframe` (Category: **Lovelace** / **Dashboard**).
 4. Search for **Ingress Card** and click **Download**.
 
 ### Manual Installation
 
-1. Download `ingress-card.js` from the [latest release](https://github.com/mbrevda/lovelace-ingress-card/releases).
+1. Download `ingress-card.js` from the [latest release](https://github.com/mbrevda/ingress-iframe/releases).
 2. Copy `ingress-card.js` into your `/config/www/` folder.
 3. In Home Assistant, go to **Settings → Dashboards → Resources** and add:
    - **URL:** `/local/ingress-card.js`

@@ -1,5 +1,5 @@
 {
-  "name": "lovelace-ingress-card",
+  "name": "ingress-iframe",
   "version": "0.1.0",
   "private": false,
   "description": "Dynamic Lovelace Ingress Card for Home Assistant",
@@ -13,6 +13,10 @@
   ],
   "license": "MIT",
   "author": "Moshe Brevda",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbrevda/ingress-iframe.git"
+  },
   "type": "module",
   "main": "ingress-card.js",
   "imports": {

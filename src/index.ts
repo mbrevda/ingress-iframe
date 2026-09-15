@@ -24,7 +24,7 @@ customGlobal.customCards ??= [];
 customGlobal.customCards.push({
   description:
     "Drop-in replacement for the Home Assistant Webpage/Iframe card that seamlessly supports Add-on Ingress and companion apps.",
-  documentationURL: "https://github.com/mbrevda/lovelace-ingress-card",
+  documentationURL: "https://github.com/mbrevda/ingress-iframe",
   name: "Ingress Card",
   preview: true,
   type: "ingress-card",
