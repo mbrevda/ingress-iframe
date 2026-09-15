@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" width="100%" height="100%">
+  <defs>
+    <!-- Background & Card Gradients -->
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#23262d" />
+      <stop offset="100%" stop-color="#181a1f" />
+    </linearGradient>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#03a9f4" />
+      <stop offset="100%" stop-color="#0288d1" />
+    </linearGradient>
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+    <filter id="iconGlow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#03a9f4" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 600; fill: #ffffff; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12.5px; fill: #9e9e9e; }
+    .window-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 500; fill: #8e8e93; letter-spacing: 0.3px; }
+    .chip-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 500; fill: #b0b0b0; }
+  </style>
+
+  <!-- Card Frame -->
+  <g filter="url(#cardShadow)">
+    <rect x="20" y="20" width="640" height="280" rx="14" ry="14" fill="url(#cardBg)" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1" />
+  </g>
+
+  <!-- Window Header -->
+  <path d="M 20 34 A 14 14 0 0 1 34 20 L 646 20 A 14 14 0 0 1 660 34 L 660 52 L 20 52 Z" fill="rgba(255, 255, 255, 0.04)" />
+  <line x1="20" y1="52" x2="660" y2="52" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1" />
+
+  <!-- Window Control Dots -->
+  <circle cx="42" cy="36" r="4.5" fill="#ff5f56" />
+  <circle cx="56" cy="36" r="4.5" fill="#ffbd2e" />
+  <circle cx="70" cy="36" r="4.5" fill="#27c93f" />
+  <text x="88" y="40" class="window-title">Ingress Card</text>
+
+  <!-- Center Icon -->
+  <g filter="url(#iconGlow)">
+    <rect x="314" y="80" width="52" height="52" rx="14" ry="14" fill="url(#iconGradient)" />
+    <!-- Web/Browser Icon -->
+    <path d="M347 93 H333 C331.9 93 331 93.9 331 95 V109 C331 110.1 331.9 111 333 111 H347 C348.1 111 349 110.1 349 109 V95 C349 93.9 348.1 93 347 93 Z M347 109 H333 V98 H347 V109 Z M347 96 H333 V95 H347 V96 Z" fill="#ffffff" />
+  </g>
+
+  <!-- Title & Subtitle -->
+  <text x="340" y="160" text-anchor="middle" class="title">Ingress Card</text>
+  <text x="340" y="184" text-anchor="middle" class="subtitle">Embed any Supervisor add-on or web application with Ingress session support.</text>
+
+  <!-- Chips / Add-on Badges -->
+  <g transform="translate(175, 212)">
+    <!-- ESPHome Chip -->
+    <g transform="translate(0, 0)">
+      <rect width="72" height="24" rx="12" fill="rgba(255, 255, 255, 0.07)" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1" />
+      <text x="36" y="16" text-anchor="middle" class="chip-text">ESPHome</text>
+    </g>
+    <!-- Node-RED Chip -->
+    <g transform="translate(80, 0)">
+      <rect width="80" height="24" rx="12" fill="rgba(255, 255, 255, 0.07)" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1" />
+      <text x="40" y="16" text-anchor="middle" class="chip-text">Node-RED</text>
+    </g>
+    <!-- Grafana Chip -->
+    <g transform="translate(168, 0)">
+      <rect width="68" height="24" rx="12" fill="rgba(255, 255, 255, 0.07)" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1" />
+      <text x="34" y="16" text-anchor="middle" class="chip-text">Grafana</text>
+    </g>
+    <!-- Zigbee2MQTT Chip -->
+    <g transform="translate(244, 0)">
+      <rect width="86" height="24" rx="12" fill="rgba(255, 255, 255, 0.07)" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1" />
+      <text x="43" y="16" text-anchor="middle" class="chip-text">Zigbee2MQTT</text>
+    </g>
+  </g>
+</svg>
