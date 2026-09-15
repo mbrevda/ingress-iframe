@@ -54,7 +54,6 @@ void describe("DynamicIngressCard", () => {
     const card = new DynamicIngressCard();
     card.setConfig({type: "custom:ingress-card", url: "/esphome"});
     assert.deepEqual(card.getLayoutOptions(), {
-      grid_columns: "full",
       grid_min_columns: 1,
       grid_min_rows: 2,
       grid_rows: 8,
@@ -66,7 +65,6 @@ void describe("DynamicIngressCard", () => {
       url: "/esphome",
     });
     assert.deepEqual(card.getLayoutOptions(), {
-      grid_columns: "auto",
       grid_min_columns: 1,
       grid_min_rows: 2,
       grid_rows: "auto",

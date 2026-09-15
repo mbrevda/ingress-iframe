@@ -2,11 +2,27 @@
 
 [![HACS Validation](https://github.com/mbrevda/ingress-iframe/actions/workflows/ci.yml/badge.svg)](https://github.com/mbrevda/ingress-iframe/actions/workflows/ci.yml)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/default)
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mbrevda&repository=ingress-iframe&category=plugin)
 
 A drop-in replacement for the official Home Assistant **Webpage / Iframe** card that adds native **Supervisor Ingress** support and companion app compatibility.
 
 Embed any add-on interface (Node-RED, ESPHome, Zigbee2MQTT, Grafana, Music Assistant, etc.) or external website directly inside your Lovelace dashboards while keeping your top header, tabs, and menu bar intact.
+
+---
+
+## Table of Contents
+
+- [Why this exists](#why-this-exists)
+- [Drop-In Replacement](#drop-in-replacement)
+- [Features](#features)
+- [Installation](#installation)
+  - [Via HACS (Recommended)](#via-hacs-recommended)
+  - [Manual Installation](#manual-installation)
+- [Configuration Examples](#configuration-examples)
+  - [Example 1: Fullscreen Dashboard View (Panel Mode)](#example-1-fullscreen-dashboard-view-panel-mode)
+  - [Example 2: Dashboard Card with Title & Aspect Ratio](#example-2-dashboard-card-with-title--aspect-ratio)
+  - [Example 3: Dynamic / Templated URL](#example-3-dynamic--templated-url)
+- [Configuration Reference](#configuration-reference)
+- [License](#license)
 
 ---
 
@@ -55,7 +71,9 @@ aspect_ratio: 50%
 
 ### Via HACS (Recommended)
 
-1. Open **HACS** in your Home Assistant sidebar.
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mbrevda&repository=ingress-iframe&category=plugin)
+
+1. Click the button above or open **HACS** in your Home Assistant sidebar.
 2. Go to **Frontend** → Three dots (top right) → **Custom repositories**.
 3. Add `https://github.com/mbrevda/ingress-iframe` (Category: **Lovelace** / **Dashboard**).
 4. Search for **Ingress Card** and click **Download**.

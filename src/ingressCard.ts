@@ -90,8 +90,8 @@ function setIngressCookie(session: string): void {
 }
 
 function resolveGridOptions(config?: IngressCardConfig): {
-  grid_columns: number | string;
-  grid_rows: number | string;
+  grid_columns?: number;
+  grid_rows: number | "auto";
   grid_min_columns: number;
   grid_min_rows: number;
 } {
@@ -99,23 +99,28 @@ function resolveGridOptions(config?: IngressCardConfig): {
   const opts = config?.grid_options || config?.layout_options;
   if (!opts) {
     return {
-      grid_columns: isAspect ? "auto" : "full",
       grid_min_columns: 1,
       grid_min_rows: 2,
       grid_rows: isAspect ? "auto" : 8,
     };
   }
 
-  const cols = opts.grid_columns || opts.columns;
-  const rows = opts.grid_rows || opts.rows;
-  const minCols = opts.grid_min_columns || opts.min_columns;
-  const minRows = opts.grid_min_rows || opts.min_rows;
+  const rawCols = opts.grid_columns ?? opts.columns;
+  const rawRows = opts.grid_rows ?? opts.rows;
+  const cols = typeof rawCols === "number" ? rawCols : undefined;
+  let rows: number | "auto" = isAspect ? "auto" : 8;
+  if (rawRows !== undefined) rows = rawRows;
+
+  const rawMinCols = opts.grid_min_columns ?? opts.min_columns;
+  const rawMinRows = opts.grid_min_rows ?? opts.min_rows;
+  const minCols = typeof rawMinCols === "number" ? rawMinCols : 1;
+  const minRows = typeof rawMinRows === "number" ? rawMinRows : 2;
 
   return {
-    grid_columns: cols || (isAspect ? "auto" : "full"),
-    grid_min_columns: minCols || 1,
-    grid_min_rows: minRows || 2,
-    grid_rows: rows || (isAspect ? "auto" : 8),
+    grid_columns: cols,
+    grid_min_columns: minCols,
+    grid_min_rows: minRows,
+    grid_rows: rows,
   };
 }
 
@@ -145,7 +150,14 @@ class DynamicIngressCard extends BaseElement {
   public setConfig(config: IngressCardConfig): void {
     if (!config) throw new Error("Invalid configuration for ingress-card");
     this._config = {...config};
-    if (this._initialized && this._hass) this._init(this._hass);
+    const rawTarget = cleanTarget(
+      this._config.url ?? this._config.addon ?? this._config.panel ?? "",
+    );
+    if (!rawTarget) {
+      this._renderPlaceholder();
+    } else if (this._initialized && this._hass) {
+      this._init(this._hass);
+    }
   }
 
   public set hass(hass: HomeAssistant) {
@@ -154,6 +166,16 @@ class DynamicIngressCard extends BaseElement {
       this._initialized = true;
       this._init(hass);
     }
+  }
+
+  public connectedCallback(): void {
+    if (!this.shadowRoot && typeof this.attachShadow === "function") {
+      this.attachShadow({mode: "open"});
+    }
+    const rawTarget = cleanTarget(
+      this._config?.url ?? this._config?.addon ?? this._config?.panel ?? "",
+    );
+    if (!rawTarget) this._renderPlaceholder();
   }
 
   public disconnectedCallback(): void {
@@ -177,6 +199,11 @@ class DynamicIngressCard extends BaseElement {
     const rawTarget = cleanTarget(
       this._config?.url ?? this._config?.addon ?? this._config?.panel ?? "",
     );
+
+    if (!rawTarget) {
+      this._renderPlaceholder();
+      return;
+    }
 
     if (isTemplate(rawTarget)) {
       hass.connection
@@ -227,7 +254,7 @@ class DynamicIngressCard extends BaseElement {
     hass: HomeAssistant,
   ): Promise<void> {
     if (!target) {
-      this._showError("No URL, addon, or panel specified.");
+      this._renderPlaceholder();
       return;
     }
 
@@ -305,6 +332,139 @@ class DynamicIngressCard extends BaseElement {
       this._currentSrc = resolvedUrl;
       this._renderIframe(resolvedUrl);
     }
+  }
+
+  private _renderPlaceholder(): void {
+    if (!this.shadowRoot) return;
+    this._currentSrc = null;
+
+    const title = this._config?.title || "Ingress Card";
+    const aspectRatio = parseAspectRatio(this._config?.aspect_ratio);
+    const height = aspectRatio ? "auto" : (this._config?.height ?? "240px");
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: block;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        ha-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 24px 16px 20px;
+          min-height: ${height};
+          box-sizing: border-box;
+          background: var(--ha-card-background, var(--card-background-color, #1c1c1e));
+          border-radius: var(--ha-card-border-radius, 12px);
+          border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, rgba(255, 255, 255, 0.12)));
+          color: var(--primary-text-color, #ffffff);
+          font-family: var(--paper-font-body1_-_font-family, inherit);
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+        }
+        .window-header {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 28px;
+          background: rgba(127, 127, 127, 0.08);
+          border-bottom: 1px solid var(--divider-color, rgba(255, 255, 255, 0.08));
+          display: flex;
+          align-items: center;
+          padding: 0 12px;
+          gap: 6px;
+        }
+        .dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          opacity: 0.7;
+        }
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+        .window-title {
+          font-size: 11px;
+          color: var(--secondary-text-color, #9e9e9e);
+          margin-left: 6px;
+          font-weight: 500;
+          letter-spacing: 0.3px;
+        }
+        .icon-container {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: var(--primary-color, #03a9f4);
+          color: var(--text-primary-color, #ffffff);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 14px;
+          margin-bottom: 10px;
+          box-shadow: 0 4px 12px rgba(3, 169, 244, 0.3);
+        }
+        .icon-container svg {
+          width: 24px;
+          height: 24px;
+          fill: currentColor;
+        }
+        .title {
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--primary-text-color, #ffffff);
+          margin: 0 0 4px 0;
+        }
+        .subtitle {
+          font-size: 11px;
+          color: var(--secondary-text-color, #9e9e9e);
+          max-width: 260px;
+          line-height: 1.4;
+          margin: 0 0 12px 0;
+        }
+        .chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 5px;
+          justify-content: center;
+          max-width: 300px;
+        }
+        .chip {
+          background: rgba(127, 127, 127, 0.12);
+          border: 1px solid var(--divider-color, rgba(255, 255, 255, 0.1));
+          border-radius: 10px;
+          padding: 2px 7px;
+          font-size: 10px;
+          font-weight: 500;
+          color: var(--secondary-text-color, #b0b0b0);
+        }
+      </style>
+      <ha-card>
+        <div class="window-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="window-title">${title}</span>
+        </div>
+        <div class="icon-container">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm0-13H5V5h14v1z"/>
+          </svg>
+        </div>
+        <h2 class="title">${title}</h2>
+        <p class="subtitle">Embed any Supervisor add-on or web application with Ingress session support.</p>
+        <div class="chips">
+          <span class="chip">ESPHome</span>
+          <span class="chip">Node-RED</span>
+          <span class="chip">Grafana</span>
+          <span class="chip">Zigbee2MQTT</span>
+        </div>
+      </ha-card>
+    `;
   }
 
   private _renderIframe(src: string): void {
@@ -419,8 +579,8 @@ class DynamicIngressCard extends BaseElement {
   }
 
   public getLayoutOptions(): {
-    grid_columns: number | string;
-    grid_rows: number | string;
+    grid_columns?: number;
+    grid_rows: number | "auto";
     grid_min_columns: number;
     grid_min_rows: number;
   } {
