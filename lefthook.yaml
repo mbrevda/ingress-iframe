@@ -1,0 +1,19 @@
+pre-commit:
+  piped: true
+  commands:
+    oxfmt:
+      priority: 1
+      stage_fixed: true
+      glob: "*.{js,cjs,mjs,ts,jsx,mjx,cjx,tsx,json,json5,yml,yaml,md,css,sh}"
+      exclude: "(ingress-card\\.js|dist/.*)"
+      run: npx oxfmt --write {staged_files}
+    oxlint:
+      priority: 2
+      stage_fixed: true
+      glob: "*.{js,cjs,mjs,ts,jsx,mjx,cjx,tsx,json,json5,yml,yaml,md,css,sh}"
+      exclude: "(ingress-card\\.js|dist/.*)"
+      run: npx oxlint {staged_files} --fix --no-error-on-unmatched-pattern
+output:
+  - empty_summary
+  - failure
+  - skips

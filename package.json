@@ -1,0 +1,45 @@
+{
+  "name": "lovelace-ingress-card",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Dynamic Lovelace Ingress Card for Home Assistant",
+  "keywords": [
+    "custom-cards",
+    "hacs",
+    "home-assistant",
+    "homeassistant",
+    "ingress",
+    "lovelace"
+  ],
+  "license": "MIT",
+  "author": "Moshe Brevda",
+  "type": "module",
+  "main": "ingress-card.js",
+  "imports": {
+    "#src/*": "./src/*",
+    "#test/*": "./test/*"
+  },
+  "scripts": {
+    "build": "node src/build.ts",
+    "lint": "oxfmt --check && oxlint",
+    "lint:fix": "oxfmt --write && oxlint --fix --fix-suggestions && oxfmt --write",
+    "test": "TZ=UTC node --test --experimental-test-module-mocks \"test/unit/**/*.test.ts\"",
+    "prepare": "lefthook install || true"
+  },
+  "devDependencies": {
+    "@types/node": "26.1.2",
+    "esbuild": "0.25.0",
+    "lefthook": "2.1.10",
+    "oxfmt": "0.62.0",
+    "oxlint": "1.77.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": ">=26.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.0": true,
+    "lefthook@2.1.10": true
+  }
+}
