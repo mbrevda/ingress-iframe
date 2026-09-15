@@ -4,8 +4,9 @@ A Home Assistant Lovelace custom card plugin that embeds Supervisor Ingress add-
 
 ## Layout
 
-- `src/index.ts` — Custom element registration (`customElements.define('ingress-card', ...)`) and `window.customCards` declaration.
+- `src/index.ts` — Custom element registration (`customElements.define('ingress-card', ...)`, `customElements.define('ingress-card-editor', ...)`) and `window.customCards` declaration.
 - `src/ingressCard.ts` — Main `DynamicIngressCard` custom element managing lifecycle, Shadow DOM, Supervisor Ingress session negotiation, keep-alive heartbeat, and template subscriptions.
+- `src/ingressCardEditor.ts` — Visual card editor custom element (`IngressCardEditor`) rendering standard `<ha-form>` schema for the Lovelace UI.
 - `src/urlResolver.ts` — Pure helper functions for parsing URLs, detecting add-on slugs, extracting subpaths, and identifying Jinja templates.
 - `src/build.ts` — esbuild bundling script generating `dist/ingress-card.js`.
 - `test/` — Unit tests executed via `node --test` with `node:assert/strict`.

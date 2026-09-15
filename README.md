@@ -41,6 +41,7 @@ aspect_ratio: 50%
 
 ## Features
 
+- **Full Visual Editor Support**: Configure all options interactively in the Home Assistant UI with live preview or switch directly to YAML.
 - **100% Drop-In Compatible**: Supports `url`, `title`, `aspect_ratio`, `allow`, and `sandbox` matching core Home Assistant behavior.
 - **Mobile Companion App Support**: Works seamlessly on Android and iOS companion apps.
 - **Header & Tab Preservation**: Keeps your Lovelace top navigation, tabs, and sidebar visible.

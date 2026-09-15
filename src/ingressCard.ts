@@ -53,6 +53,14 @@ const BaseElement =
     : (class {} as unknown as typeof HTMLElement);
 
 export class DynamicIngressCard extends BaseElement {
+  public static getConfigElement(): HTMLElement {
+    return document.createElement("ingress-card-editor");
+  }
+
+  public static getStubConfig(): IngressCardConfig {
+    return {aspect_ratio: "56.25%", type: "custom:ingress-card", url: ""};
+  }
+
   private _config?: IngressCardConfig;
   private _hass?: HomeAssistant;
   private _initialized = false;

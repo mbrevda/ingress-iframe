@@ -1,4 +1,5 @@
 import {DynamicIngressCard} from "#src/ingressCard.ts";
+import {IngressCardEditor} from "#src/ingressCardEditor.ts";
 
 type CustomCardInfo = {
   type: string;
@@ -14,6 +15,10 @@ if (!globalThis.customElements.get("ingress-card")) {
   globalThis.customElements.define("ingress-card", DynamicIngressCard);
 }
 
+if (!globalThis.customElements.get("ingress-card-editor")) {
+  globalThis.customElements.define("ingress-card-editor", IngressCardEditor);
+}
+
 const customGlobal = globalThis as CustomGlobal;
 customGlobal.customCards ??= [];
 customGlobal.customCards.push({
@@ -26,4 +31,5 @@ customGlobal.customCards.push({
 });
 
 export {DynamicIngressCard} from "#src/ingressCard.ts";
+export {IngressCardEditor} from "#src/ingressCardEditor.ts";
 export type {CustomCardInfo};
